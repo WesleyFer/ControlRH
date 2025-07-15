@@ -1,0 +1,46 @@
+﻿@model GrupoViewModel
+
+@{
+    ViewData["Title"] = "Detalhes do Grupo";
+}
+
+<div class="card shadow-lg border-0 rounded-4">
+    <div class="card-header bg-primary d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-people-fill me-2"></i> Detalhes do Grupo</h5>
+    </div>
+
+    <div class="card-body">
+        <dl class="row mb-4">
+            <dt class="col-sm-3">Nome do Grupo:</dt>
+            <dd class="col-sm-9">@Model.Nome</dd>
+
+            <dt class="col-sm-3">Permissões:</dt>
+            <dd class="col-sm-9">
+                @if (Model.PermissoesDisponiveis?.Any() == true)
+                {
+                    @foreach (var permissao in Model.PermissoesDisponiveis)
+                    {
+                        <span class="badge bg-success text-white me-1 mb-1" title="Permissão ativa: @permissao.Valor">
+                            <i class="bi bi-check-circle-fill me-1"></i> @permissao.Valor
+                        </span>
+                    }
+                }
+                else
+                {
+                    <span class="text-muted">Nenhuma permissão atribuída.</span>
+                }
+            </dd>
+        </dl>
+
+        <hr />
+    </div>
+
+    <div class="card-footer bg-light text-center">
+        <a asp-area="Admin" asp-controller="Grupo" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-custom btn-outline-primary me-2">
+            <i class="bi bi-pencil-square me-1"></i> Editar
+        </a>
+        <a asp-area="Admin" asp-controller="Grupo" asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Voltar
+        </a>
+    </div>
+</div>

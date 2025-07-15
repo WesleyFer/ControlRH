@@ -1,0 +1,11 @@
+﻿@model ControlRH.Models.ViewModels.DynamicTableViewModel
+
+@{
+    ViewData["Title"] = "Jornada de Trabalho";
+}
+
+<div class="card shadow">
+    <div class="card-body">
+        @await Html.PartialAsync("_DynamicTable", Model)
+    </div>
+</div>

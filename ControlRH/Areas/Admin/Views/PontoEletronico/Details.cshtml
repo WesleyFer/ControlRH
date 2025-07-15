@@ -1,0 +1,20 @@
+﻿@model PontoEletronicoViewModel
+
+@{
+    ViewData["Title"] = "Detalhes do Ponto Eletrônico";
+}
+
+<div class="card">
+    <div class="card-header">
+        Detalhes do Ponto Eletrônico 
+    </div>
+    <div class="card-body">
+        <p><strong>Data:</strong> @Model.Data</p>
+
+        <hr />
+    </div>
+    <div class="card-footer text-center">
+        <a asp-area="Admin" asp-controller="PontoEletronico" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-primary btn-custom">Editar</a>
+        <a asp-area="Admin" asp-controller="PontoEletronico" asp-action="Index" class="btn btn-sm btn-secondary btn-custom">Voltar</a>
+    </div>
+</div>

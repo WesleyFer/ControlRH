@@ -1,0 +1,49 @@
+﻿@model PontoEletronicoViewModel
+
+@{
+    ViewData["Title"] = "Editar Ponto Eletrônico";
+}
+
+
+<div class="card shadow">
+    <div class="card-body">
+
+        <nav class="small" aria-label="breadcrumb">
+            <ol class="breadcrumb p-2">
+                <li class="breadcrumb-item"><a asp-action="Index">Ponto Eletrônico</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Editar</li>
+            </ol>
+        </nav>
+
+        <form asp-area="Admin" asp-controller="PontoEletronico" asp-action="Edit" method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" asp-for="Id" />
+
+            <div class="row mb-3">
+                <label asp-for="Data" class="col-sm-1 col-form-label fw-semibold">
+                    Data Marcação<span class="text-danger">*</span>
+                </label>
+                <div class="col-sm-11">
+                    <input asp-for="Data" class="form-control" />
+                    <span asp-validation-for="Data" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-custom btn-primary">Salvar</button>
+                <a asp-area="Admin" asp-controller="PontoEletronico" asp-action="Index" class="btn btn-custom btn-secondary ms-2">Cancelar</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        window.PontoEletronico.init();
+    </script>
+}

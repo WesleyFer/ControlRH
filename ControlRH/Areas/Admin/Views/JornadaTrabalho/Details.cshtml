@@ -1,0 +1,21 @@
+﻿@model JornadaTrabalhoViewModel
+
+@{
+    ViewData["Title"] = "Detalhes da Jornada de trabalho";
+}
+
+<div class="card">
+    <div class="card-header">
+        Detalhes da Jornada de Trabalho 
+    </div>
+    <div class="card-body">
+        <p><strong>Nome:</strong> @Model.Nome</p>
+        <p><strong>Criado em:</strong> @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
+
+        <hr />
+    </div>
+    <div class="card-footer text-center">
+        <a asp-area="Admin" asp-controller="JornadaTrabalho" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-primary btn-custom">Editar</a>
+        <a asp-area="Admin" asp-controller="JornadaTrabalho" asp-action="Index" class="btn btn-sm btn-secondary btn-custom">Voltar</a>
+    </div>
+</div>

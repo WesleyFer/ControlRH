@@ -39,11 +39,11 @@ public class PermissaoAttribute : AuthorizeAttribute, IAuthorizationFilter
             return;
         }
 
-        var ipUsuario = context.HttpContext.Connection.RemoteIpAddress?.ToString();
-        if (ipUsuario is not null && !ipUsuario.StartsWith("192.168.") && !ipUsuario.StartsWith("10.") && !ipUsuario.Equals("::1"))
-        {
-            context.Result = new ForbidResult(); // 403 Forbidden
-            return;
-        }
+        //var ipUsuario = context.HttpContext.Connection.RemoteIpAddress?.ToString();
+        //if (ipUsuario is not null && !ipUsuario.StartsWith("192.168.") && !ipUsuario.StartsWith("10.") && !ipUsuario.Equals("::1"))
+        //{
+        //    context.Result = new ForbidResult(); // 403 Forbidden
+        //    return;
+        //}
     }
 }

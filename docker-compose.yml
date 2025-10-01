@@ -1,0 +1,39 @@
+services:
+  mysql-mysqldb-2:
+    image: mysql:8
+    container_name: mysql-mysqldb-2
+    environment:
+      MYSQL_ROOT_PASSWORD: B4nc0
+    ports:
+      - "3307:3306"
+    networks:
+      - control-rh-network
+    volumes:
+      - mysql_data:/var/lib/mysql
+  controlrh:
+    build:
+      context: .
+      dockerfile: ControlRH/Dockerfile
+    depends_on:
+      - mysql-mysqldb-2
+    container_name: control-rh
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__MySql=Server=mysql-mysqldb-2;User Id=root;Password=B4nc0;Allow User Variables=true;Database=ControlRH;AllowLoadLocalInfile=true;
+      - Jwt__Secret=Z69JI5J1DFBsDmUovxGdTLGpH8M4K4MG
+      - Jwt__Issuer=https://api.controlrh.com.br
+      - Jwt__Audience=controlrh
+      - UploadSettings__BasePath= /app/storage
+    volumes:
+     - ./storage:/app/storage
+    ports:
+      - "5026:5026" # HTTP
+      - "7158:7158" # HTTPS
+    networks:
+      - control-rh-network
+networks:
+ control-rh-network:
+  driver: bridge
+volumes: 
+ mysql_data:
+ controlrh_storage:   

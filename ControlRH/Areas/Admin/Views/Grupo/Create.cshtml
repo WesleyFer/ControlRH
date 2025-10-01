@@ -1,0 +1,158 @@
+﻿@model GrupoViewModel
+
+@{
+    ViewData["Title"] = "Novo Grupo";
+}
+
+<style>
+    .treeview .form-check-label::before {
+        font-size: 0.9rem;
+        margin-right: 5px;
+    }
+
+    .treeview .form-check-label:has(input[type="checkbox"]:checked) {
+        font-weight: bold;
+    }
+
+    .treeview input[type="checkbox"] {
+        margin-right: 5px;
+    }
+
+    .treeview .ms-4 {
+        margin-left: 1.5rem;
+    }
+</style>
+
+<div class="card shadow">
+    <div class="card-body">
+
+        <nav class="small" aria-label="breadcrumb">
+            <ol class="breadcrumb p-2">
+                <li class="breadcrumb-item"><a asp-action="Index">Grupo</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Novo</li>
+            </ol>
+        </nav>
+        <form asp-area="Admin" asp-controller="Grupo" asp-action="Create" method="post">
+
+            @Html.AntiForgeryToken()
+
+            <div class="row mb-3">
+                <label asp-for="Nome" class="col-sm-1 col-form-label fw-semibold">
+                    Nome <span class="text-danger">*</span>
+                </label>
+                <div class="col-sm-11">
+                    <input asp-for="Nome" class="form-control" />
+                    <span asp-validation-for="Nome" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="border p-3 rounded mb-3">
+
+                <h5 class="fw-bold">Permissões</h5>
+                <hr />
+
+                <div class="row g-3 align-items-end">
+                    <div class="d-flex align-item-center justify-content-center">
+                        <div>
+                            <input type="checkbox" id="checkAll" class="form-check-input" />
+                            <label for="checkAll" class="form-check-label"><strong>Selecionar Todos</strong></label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="row treeview">
+                            @{
+                                var categorias = Model.PermissoesDisponiveis
+                                .GroupBy(p => p.Categoria)
+                                .OrderBy(g => g.Key);
+                            }
+
+                            @foreach (var categoria in categorias)
+                            {
+                                <div class="col-6">
+                                    @{
+                                        var grupoId = Guid.NewGuid().ToString("N");
+                                    }
+                                    <div class="tree-group mb-2">
+                                        <div class="form-check">
+                                            <input type="checkbox"
+                                                   class="form-check-input grupo-checkbox"
+                                                   id="grupo-@grupoId"
+                                                   onchange="toggleGrupo('@grupoId')" />
+                                            <label class="form-check-label fw-bold" for="grupo-@grupoId">
+                                                📁 @categoria.Key
+                                            </label>
+                                        </div>
+                                        <div class="ms-4">
+                                            @foreach (var permissao in categoria)
+                                            {
+                                                <div class="form-check">
+                                                    <input type="checkbox"
+                                                           class="form-check-input permissao-checkbox grupo-@grupoId"
+                                                           name="PermissoesSelecionadas"
+                                                           value="@permissao.Id"
+                                                           id="perm-@permissao.Id"
+                                                    @(Model.PermissoesSelecionadas.Contains(permissao.Id ?? Guid.Empty) ? "checked" : "") />
+                                                    <label class="form-check-label" for="perm-@permissao.Id">
+                                                        📄 @permissao.Valor
+                                                    </label>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-custom btn-primary">Salvar</button>
+                <a asp-area="Admin" asp-controller="Grupo" asp-action="Index" class="btn btn-custom btn-secondary ms-2">Cancelar</a>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleGrupo(grupoId) {
+            const checked = document.getElementById(`grupo-${grupoId}`).checked;
+            document.querySelectorAll(`.grupo-${grupoId}`).forEach(cb => cb.checked = checked);
+        }
+
+        // Sincronizar checkbox do grupo pai com os filhos
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.tree-group').forEach(grupo => {
+                const grupoCheckbox = grupo.querySelector('.grupo-checkbox');
+                const grupoId = grupoCheckbox.id.replace('grupo-', '');
+                const filhos = grupo.querySelectorAll(`.grupo-${grupoId}`);
+
+                filhos.forEach(cb => {
+                    cb.addEventListener('change', () => {
+                        grupoCheckbox.checked = Array.from(filhos).every(x => x.checked);
+                    });
+                });
+            });
+        });
+
+        document.getElementById('checkAll').addEventListener('change', function () {
+            const checkboxes = document.querySelectorAll('.treeview input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = this.checked);
+        });
+
+        // Atualiza o estado do "Selecionar Todos" conforme os itens são (des)marcados
+        const permissionCheckboxes = document.querySelectorAll('.treeview input[type="checkbox"]');
+        permissionCheckboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+                const allChecked = Array.from(permissionCheckboxes).every(x => x.checked);
+                document.getElementById('checkAll').checked = allChecked;
+            });
+        });
+    </script>
+}

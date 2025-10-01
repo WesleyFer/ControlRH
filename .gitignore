@@ -1,0 +1,100 @@
+#--------------------------------------------------------------------------------------
+# ASP.NET Core / C# / .NET
+# Ignora arquivos de build, pacotes, e configurações comuns do Visual Studio/JetBrains
+#--------------------------------------------------------------------------------------
+
+## Build e Binários
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+*.dll
+*.exe
+*.pdb
+*.suo
+*.user
+*.config.user
+*.pri
+*.sconcord
+
+# NuGet Packages
+packages/
+*.nupkg
+.nuget/
+# Restaurações de pacotes (VS Code/CLI)
+**/project.assets.json
+
+# Logs
+[Ll]ogs/
+*.log
+
+#--------------------------------------------------------------------------------------
+# Visual Studio / IDEs
+#--------------------------------------------------------------------------------------
+
+## Visual Studio
+# Pastas temporárias e de solução
+.vs/
+*.vsp
+*.csproj.user
+*.vcproj.user
+*.sln.docstates
+*.*proj.user
+
+# Pastas de cache de componentes
+.Designer/
+.webpubxml
+.webpubxml.user
+
+## Rider / JetBrains
+.idea/
+
+## VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+
+#--------------------------------------------------------------------------------------
+# Docker
+# Ignora caches de build e arquivos de ambiente sensíveis
+#--------------------------------------------------------------------------------------
+
+# Arquivos de ambiente sensíveis (Sempre ignorar!)
+.env
+.env.*
+.env.local
+
+# Docker build cache (para Windows/Linux com mount)
+.dockerignore
+!*/.dockerignore # Garante que o .dockerignore pode ser incluído, se necessário
+
+# Arquivos gerados por Docker Compose
+compose.override.yml
+docker-compose.override.yml
+
+# Docker build context temporary folders
+.docker/
+
+#--------------------------------------------------------------------------------------
+# Volumes / Storage
+# Ignora pastas de armazenamento de dados localmente (se mapeadas com bind-mount)
+#--------------------------------------------------------------------------------------
+
+# Ignora a pasta de armazenamento de arquivos (conforme seu docker-compose.yml, se for um bind mount)
+# Se você usa `./app_storage` no host:
+app_storage/
+
+#--------------------------------------------------------------------------------------
+# Misc
+#--------------------------------------------------------------------------------------
+
+# Arquivos temporários
+*~
+*.bak
+# Arquivos de backup do Nano/Vim
+*#
+# Arquivos de thumbnail de sistema
+Thumbs.db

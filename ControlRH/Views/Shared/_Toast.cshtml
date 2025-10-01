@@ -1,0 +1,50 @@
+﻿@{
+    var toastType = TempData["ToastType"]?.ToString();
+    var toastMessage = TempData["ToastMessage"]?.ToString();
+
+    var toastTitle = toastType switch
+    {
+        "success" => "Sucesso",
+        "error" => "Erro",
+        "warning" => "Atenção",
+        "info" => "Informação",
+        _ => "Mensagem"
+    };
+
+    var toastBg = toastType switch
+    {
+        "success" => "bg-success text-white",
+        "error" => "bg-danger text-white",
+        "warning" => "bg-warning text-white",
+        "info" => "bg-info text-white",
+        _ => "bg-secondary text-white"
+    };
+}
+
+@if (!string.IsNullOrEmpty(toastMessage))
+{
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055;">
+        <div class="toast show @toastBg fade" role="alert" aria-live="assertive" aria-atomic="true" id="customToast">
+            <div class="toast-header @toastBg">
+                <strong class="me-auto">@toastTitle</strong>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                @toastMessage
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toastElement = document.getElementById("customToast");
+            if (toastElement) {
+                setTimeout(() => {
+                    const toast = bootstrap.Toast.getOrCreateInstance(toastElement);
+                    toast.hide();
+                }, 5000); // 5 segundos
+            }
+        });
+    </script>
+}

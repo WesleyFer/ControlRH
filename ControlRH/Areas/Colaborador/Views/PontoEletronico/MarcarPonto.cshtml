@@ -1,0 +1,223 @@
+﻿@model PontoEletronicoViewModel
+
+@{
+    ViewData["Title"] = "Nova Marcação Ponto";
+
+    string ultimaSincronizacao = "Nenhuma sincronização recente.";
+
+    if (Model.UltimaMarcacao.HasValue)
+    {
+        var ultimaMarcacao = Model.UltimaMarcacao.Value;
+        var data = ultimaMarcacao.ToString("dd/MM/yyyy");
+        var hora = ultimaMarcacao.ToString("HH:mm:ss");
+
+        ultimaSincronizacao = $"Última sincronização: {data} ás {hora}";
+    }
+
+}
+
+<style>
+    body {
+        background-color: #f2f7fc;
+        font-family: Arial, sans-serif;
+    }
+
+    .top-bar-success {
+        background-color: #0ead63;
+        color: white;
+        font-size: 0.9rem;
+        padding: 0.3rem 1rem;
+        text-align: center;
+    }
+
+    .top-bar {
+        background-color: #f2f2f2;
+        color: black;
+        font-size: 0.9rem;
+        padding: 0.3rem 1rem;
+        text-align: center;
+    }
+
+    .card-container {
+        max-width: 400px;
+        margin: 1rem auto;
+        padding: 1rem;
+    }
+
+    .time-display {
+        font-size: 2.5rem;
+        font-weight: bold;
+    }
+
+    .btn-rounded {
+        border-radius: 25px;
+        padding: 0.75rem 1.5rem;
+    }
+
+    .bottom-box {
+        background-color: #e8f6ed;
+        border-left: 5px solid #0ead63;
+        padding: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .pulse-red {
+        animation: pulse-red 1s infinite;
+    }
+
+    @@keyframes pulse-red {
+        0% {
+            background-color: #dc3545;
+        }
+
+        50% {
+            background-color: #a71d2a;
+        }
+
+        100% {
+            background-color: #dc3545;
+        }
+    }
+
+    .pulse-yellow {
+        animation: pulse-yellow 1s infinite;
+    }
+
+    @@keyframes pulse-yellow {
+        0% {
+            background-color: #ffc107;
+        }
+
+        50% {
+            background-color: #e0a800;
+        }
+
+        100% {
+            background-color: #ffc107;
+        }
+    }
+</style>
+
+<div class="card shadow">
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-4">
+                <div class="card">
+                    <div class="top-bar-success" id="ultimaSync">@ultimaSincronizacao</div>
+
+                    <div class="card-container text-center">
+
+                        <p class="mb-1" id="diaSemana"></p>
+                        <h6 class="mb-0" id="dataAtual"></h6>
+                        <div class="time-display my-3" id="horaAtual"></div>
+
+                        <div class="d-grid gap-2 col-10 mx-auto my-4">
+                            <button class="btn btn-primary btn-rounded" data-bs-toggle="modal" data-bs-target="#registroModal">
+                                <i class="bi bi-geo-alt-fill"></i>&nbsp;&nbsp;Registrar ponto
+                            </button>
+                        </div>
+
+                        <div class="bottom-box text-start">
+                            <small id="infoRegistro" class="text-muted">Hoje 13:01 GMT-03:00 via Web</small><br>
+                            <span class="fw-semibold text-success">📍 Av. Copacabana, 238 - 4º andar - Empresarial 18 do Forte / Alphaville, Barueri - SP - 06472-001, Brasil</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-3">
+                <div class="card">
+                    <div id="countdownBox" class="card text-center">
+                        <div class="card-header">Tempo restante para pausa</div>
+                        <div class="card-body">
+                            <h1 id="countdownTimer" class="display-4 text-dark">--:--</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-5">
+                <div class="card">
+                    <div class="top-bar">
+                        Marcação do dia 16/07/2025
+                    </div>
+                    <div class="card-body">
+                        <div class="row" style="max-height: 400px; overflow-y: auto;">
+
+                            <div class="col-12 mb-3">
+                                <div class="card shadow-sm border-primary">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Entrada</h5>
+                                        <p class="mb-1" style="background-color: #fff3cd; padding: 2px 6px; border-radius: 4px;"><strong>Horário da Marcação:</strong> 08:02 - 16/07/2025</p>
+                                        <p class="text-muted"><small><strong>Registro:</strong> d3f8e42b-7a4b-4cda-98f9-9e2412b2fd61</small></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mb-3">
+                                <div class="card shadow-sm border-primary">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Saida</h5>
+                                        <p class="mb-1" style="background-color: #fff3cd; padding: 2px 6px; border-radius: 4px;"><strong>Horário da Marcação:</strong> 13:00 - 16/07/2025</p>
+                                        <p class="text-muted"><small><strong>Registro:</strong> d3f8e42b-7a4b-4cda-98f9-9e2412b2fd62</small></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="registroModal" tabindex="-1" aria-labelledby="registroModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <form asp-area="Colaborador" asp-controller="PontoEletronico" asp-action="MarcarPonto" method="post">
+                
+                @Html.AntiForgeryToken()
+                
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registroModalLabel">Confirmar Ponto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body text-center">
+
+                    <div class="col mb-3">
+                        <label asp-for="TipoMarcacao" class="form-label">Tipo de Marcação <span class="text-danger">*</span></label>
+                        <select asp-for="TipoMarcacao" asp-items="Model.TiposMarcacoesSelectList" class="form-select" required>
+                            <option value="">-- Selecione --</option>
+                        </select>
+                        <span asp-validation-for="TipoMarcacao" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-2">
+                        <div id="registroData" class="fw-semibold text-muted"></div>
+                        <div id="registroHora" class="display-4 fw-bold text-dark"></div>
+                        <input type="hidden" asp-for="DataHora" name="DataHora" id="horaRegistroHidden" />
+                    </div>
+                </div>
+
+                <div class="modal-footer d-flex justify-content-center">
+                    <button type="submit" class="btn btn-primary px-4">Confirmar</button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script src="~/js/colaborador/ponto-eletronico.js" asp-append-version="true"></script>
+
+    <script>
+        window.PontoEletronico.init();
+    </script>
+
+}

@@ -1,0 +1,122 @@
+﻿@model ColaboradorViewModel
+
+@{
+    ViewData["Title"] = "Editar Colaborador";
+}
+
+<div class="card shadow">
+    <div class="card-body">
+
+        <nav class="small" aria-label="breadcrumb">
+            <ol class="breadcrumb p-2">
+                <li class="breadcrumb-item"><a asp-action="Index">Colaborador</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Novo</li>
+            </ol>
+        </nav>
+
+        <form asp-area="Admin" asp-controller="Colaborador" asp-action="Edit" method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" asp-for="Id" />
+
+            <div class="row mb-3">
+                <label asp-for="Cpf" class="col-sm-2 col-form-label fw-semibold">
+                    CPF <span class="text-danger">*</span>
+                </label>
+                <div class="col-sm-10">
+                    <input asp-for="Cpf" class="form-control" placeholder="Ex: 000.000.000-00" />
+                    <span asp-validation-for="Cpf" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label asp-for="Pis" class="col-sm-2 col-form-label fw-semibold">
+                    PIS <span class="text-danger">*</span>
+                </label>
+                <div class="col-sm-10">
+                    <input asp-for="Pis" class="form-control" placeholder="Ex: 000.00000.00-0" />
+                    <span asp-validation-for="Pis" class="text-danger small"></span>
+
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label asp-for="Matricula" class="col-sm-2 col-form-label fw-semibold">
+                    Matrícula <span class="text-danger">*</span>
+                </label>
+                <div class="col-sm-10">
+                    <input asp-for="Matricula" class="form-control" placeholder="Ex: 00000" />
+                    <span asp-validation-for="Matricula" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label asp-for="Nome" class="col-sm-2 col-form-label fw-semibold">
+                    Nome <span class="text-danger">*</span>
+                </label>
+                <div class="col-sm-10">
+                    <input asp-for="Nome" class="form-control" placeholder="Ex: Jose dos Santos" />
+                    <span asp-validation-for="Nome" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label asp-for="CargoId" class="col-sm-2 col-form-label  fw-semibold">
+                    Cargos <span class="text-danger">*</span>
+                </label>
+                <div class="col-sm-9">
+                    <select asp-for="CargoId" asp-items="Model.CargosSelectList" class="form-control">
+                        <option value="00000000-0000-0000-0000-000000000000">-- Selecione --</option>
+                    </select>
+                    <span asp-validation-for="CargoId" class="text-danger"></span>
+                </div>
+                <div class="col-sm-1">
+                    <a asp-area="Admin" asp-controller="Cargo" asp-action="Create" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Adicionar Cargos">
+                        <i class="bi bi-plus"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label asp-for="CarteiraClienteId" class="col-sm-2 col-form-label  fw-semibold">
+                    Carteira de Cliente <span class="text-danger">*</span>
+                </label>
+                <div class="col-sm-10">
+
+                    <select asp-for="CarteiraClienteId" asp-items="Model.CarteirasClientesSelectList" class="form-control">
+                        <option value="">-- Selecione --</option>
+                    </select>
+                    <span asp-validation-for="CarteiraClienteId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label asp-for="JornadaTrabalhoId" class="col-sm-2 col-form-label  fw-semibold">
+                    Jornada de Trabalho <span class="text-danger">*</span>
+                </label>
+                <div class="col-sm-10">
+                    <select asp-for="JornadaTrabalhoId" asp-items="Model.JornadasTrabalhosSelectList" class="form-control">
+                        <option value="00000000-0000-0000-0000-000000000000">-- Selecione --</option>
+                    </select>
+                    <span asp-validation-for="JornadaTrabalhoId" class="text-danger"></span>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-custom btn-primary">Salvar</button>
+                <a asp-area="Admin" asp-controller="Colaborador" asp-action="Index" class="btn btn-custom btn-secondary ms-2">Cancelar</a>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        window.Colaborador.init();
+    </script>
+}

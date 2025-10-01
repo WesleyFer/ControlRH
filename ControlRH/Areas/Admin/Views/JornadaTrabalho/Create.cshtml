@@ -1,0 +1,90 @@
+﻿@using ControlRH.Core.Enums
+@using ControlRH.Core.Extensions
+
+@model JornadaTrabalhoViewModel
+
+@{
+    ViewData["Title"] = "Nova Jornada Trabalho";
+}
+
+
+<div class="card shadow">
+    <div class="card-body">
+
+        <nav class="small" aria-label="breadcrumb">
+            <ol class="breadcrumb p-2">
+                <li class="breadcrumb-item"><a asp-action="Index">Jornada Trabalho</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Nova</li>
+            </ol>
+        </nav>
+
+        <form asp-area="Admin" asp-controller="JornadaTrabalho" asp-action="Create" method="post">
+
+            @Html.AntiForgeryToken()
+
+            <div class="row mb-3">
+                <label asp-for="Nome" class="col-sm-1 col-form-label fw-semibold">
+                    Nome <span class="text-danger">*</span>
+                </label>
+                <div class="col-sm-11">
+                    <input asp-for="Nome" class="form-control" placeholder="Ex: Jornada Trabalho Horário Equipe" />
+                    <span asp-validation-for="Nome" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <div class="border p-3 rounded mb-3">
+                <h5 class="fw-bold mb-3">Jornada Trabalhos e Horários</h5>
+
+                <div class="row g-3 align-items-end">
+
+                    <div class="col-md-12  align-items-center">
+                        @for (int i = 0; i <= 6; i++)
+                        {
+                            var dia = (DiaSemanaType)i;
+                            var estaMarcado = Model.DiasSelecionados?.Contains(dia) == true;
+
+                            <div class="form-check form-check-inline">
+                                <input type="checkbox" class="form-check-input" name="DiasSelecionados" value="@i" id="chk@(i)" @(estaMarcado ? "checked" : "") />
+                                <label class="form-check-label" for="chk@(i)">
+                                    @dia.ToDescription()
+                                </label>
+                            </div>
+                        }
+                        <span asp-validation-for="DiasSelecionados" class="text-danger small"></span>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="HoraEntrada" class="form-label">Horário Entrada</label>
+                        <input type="time" asp-for="HoraEntrada" class="form-control">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="HoraSaida" class="form-label">Horário Saída</label>
+                        <input type="time" asp-for="HoraSaida" class="form-control">
+                    </div>
+
+                    <div class="col-md-4">
+                        <label asp-for="DuracaoIntervalo" class="form-label">Duração Intervalo</label>
+                        <input type="time" asp-for="DuracaoIntervalo" class="form-control">
+                    </div>
+
+                </div>
+
+            </div>
+
+            <hr />
+
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-custom btn-primary">Salvar</button>
+                <a asp-area="Admin" asp-controller="JornadaTrabalho" asp-action="Index" class="btn btn-custom btn-secondary ms-2">Cancelar</a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        window.JornadaTrabalho.init();
+    </script>
+}

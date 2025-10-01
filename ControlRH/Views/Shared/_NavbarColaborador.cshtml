@@ -1,0 +1,157 @@
+﻿@using ControlRH.Core.Contracts
+@using ControlRH.Core.Helpers
+
+@inject IUsuarioLogado UsuarioLogado
+
+@{
+    string Nome = string.Empty;
+    string Cpf = string.Empty;
+    string Pis = string.Empty;
+
+    if (UsuarioLogado.Autenticado)
+    {
+        Nome = UsuarioLogado?.Nome;
+        Cpf = Utils.FormatarCpf(UsuarioLogado?.Cpf);
+        Pis = Utils.FormatarPis(UsuarioLogado?.Pis);
+    }
+}
+
+<!-- Topbar -->
+<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow justify-content-end">
+
+    <!-- Sidebar Toggle (Topbar) -->
+    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+        <i class="fa fa-bars"></i>
+    </button>
+
+    <!-- Topbar Navbar -->
+    <ul class="navbar-nav">
+
+        <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+        <li class="nav-item dropdown no-arrow d-sm-none">
+            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+               data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-search fa-fw"></i>
+            </a>
+            <!-- Dropdown - Messages -->
+            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                 aria-labelledby="searchDropdown">
+                <form class="form-inline mr-auto w-100 navbar-search">
+                    <div class="input-group">
+                        <input type="text" class="form-control bg-light border-0 small"
+                               placeholder="Search for..." aria-label="Search"
+                               aria-describedby="basic-addon2">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="button">
+                                <i class="fas fa-search fa-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </li>
+
+
+        <li class="nav-item dropdown">
+            <a class="nav-link" asp-area="Colaborador" asp-controller="PontoEletronico" asp-action="MarcarPonto" style="color: #000000">
+                Marcar ponto
+            </a>
+        </li>
+
+        <li class="nav-item dropdown">
+            <a class="nav-link" asp-area="Colaborador" asp-controller="PontoEletronico" asp-action="Index" style="color: #000000">
+                Espelho de ponto
+            </a>
+        </li>
+
+        <li class="nav-item dropdown">
+            <a class="nav-link" asp-area="Colaborador" asp-controller="PontoEletronico" asp-action="Documento" style="color: #000000">
+                Documentos
+            </a>
+        </li>
+
+        <!-- Nav Item - Alerts -->
+        <li class="nav-item dropdown">
+            <a class="nav-link" href="#" role="button"
+               data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-bell fa-fw"></i>
+                <span class="badge badge-danger badge-counter">3+</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="alertsDropdown">
+                <li><h6 class="dropdown-header">Alerts Center</h6></li>
+                <li>
+                    <a class="dropdown-item d-flex align-items-center" href="#">
+                        <div class="me-3">
+                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <i class="fas fa-file-alt text-white"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="small text-muted">December 12, 2019</div>
+                            <span class="fw-bold">A new monthly report is ready to download!</span>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item d-flex align-items-center" href="#">
+                        <div class="me-3">
+                            <div class="bg-success rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <i class="fas fa-donate text-white"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="small text-muted">December 7, 2019</div>
+                            $290.29 has been deposited into your account!
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a class="dropdown-item d-flex align-items-center" href="#">
+                        <div class="me-3">
+                            <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                <i class="fas fa-exclamation-triangle text-white"></i>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="small text-muted">December 2, 2019</div>
+                            Spending Alert: We've noticed unusually high spending for your account.
+                        </div>
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-center small text-muted" href="#">Show All Alerts</a></li>
+            </ul>
+        </li>
+
+        <div class="topbar-divider d-none d-sm-block"></div>
+
+        <!-- Nav Item - User Information -->
+        <li class="nav-item dropdown no-arrow">
+
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <img class="img-profile rounded-circle" src="~/img/undraw_profile.svg" style="width: 50px; height: 50px; margin-right: 16px">
+
+                <div class="text-start me-2 d-none d-lg-block">
+                    <div class="text-gray-800 small fw-semibold">
+                        @Nome
+                    </div>
+                    <div class="text-gray-600 small">
+                        @Cpf
+                    </div>
+                    <div class="text-gray-600 small">
+                        @Pis
+                    </div>
+                </div>
+            </a>
+            <div class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="userDropdown">
+                <a class="dropdown-item" asp-area="" asp-controller="Auth" asp-action="Logout">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw me-2 text-gray-400"></i>
+                    Sair
+                </a>
+            </div>
+        </li>
+
+    </ul>
+
+</nav>
+<!-- End of Topbar -->

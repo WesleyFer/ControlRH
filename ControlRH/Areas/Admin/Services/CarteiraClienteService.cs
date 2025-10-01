@@ -1,0 +1,152 @@
+﻿using ControlRH.Areas.Admin.Contracts;
+using ControlRH.Areas.Admin.Models;
+using ControlRH.Areas.Admin.Models.ViewModels;
+using ControlRH.Core.Contracts;
+using ControlRH.Models.ViewModels;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
+
+namespace ControlRH.Areas.Admin.Services;
+
+public class CarteiraClienteService : ICarteiraClienteService
+{
+    private readonly IQueryContext _queryContext;
+    private readonly IUnitOfWork _uow;
+
+    public CarteiraClienteService(IQueryContext queryContext, IUnitOfWork uow)
+    {
+        _queryContext = queryContext;
+        _uow = uow;
+    }
+
+    public async Task<IEnumerable<CarteiraCliente>> GetAllAsync(CancellationToken cancellationToken = default)
+    {
+        return await _queryContext.QueryCarteirasClientes
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<CarteiraCliente?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await _queryContext.QueryCarteirasClientes
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+    }
+
+    public async Task<DynamicTableViewModel> ObterTabelaIndexAsync(string? search, int page = 1, int pageSize = 5, string? sort = null, string? dir = null, CancellationToken cancellationToken = default)
+    {
+        var query = _queryContext.QueryCarteirasClientes;
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(x => EF.Functions.Like(x.Nome, $"%{search}%"));
+        }
+
+        if (!string.IsNullOrEmpty(sort) && Columns.ContainsKey(sort))
+        {
+            var parameter = Expression.Parameter(typeof(CarteiraCliente), "c");
+            var property = Expression.Property(parameter, sort);
+            var lambda = Expression.Lambda(property, parameter);
+
+            var methodName = string.Equals(dir, "asc", StringComparison.OrdinalIgnoreCase) ? "OrderBy" : "OrderByDescending";
+            var method = typeof(Queryable).GetMethods()
+                .First(m => m.Name == methodName && m.GetParameters().Length == 2);
+
+            var genericMethod = method.MakeGenericMethod(typeof(CarteiraCliente), property.Type);
+
+            query = (IQueryable<CarteiraCliente>)genericMethod.Invoke(null, new object[] { query, lambda });
+        }
+
+        var totalItems = await query.CountAsync();
+        var pageData = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+
+        var viewModel = new DynamicTableViewModel
+        {
+            Data = pageData.Cast<object>(),
+            Columns = Columns,
+            PageNumber = page,
+            PageSize = pageSize,
+            TotalItems = totalItems,
+            Search = search,
+            Sort = sort,
+            Dir = dir,
+            AreaName = "Admin",
+            ControllerName = nameof(CarteiraCliente),
+            TextoBotaoAdicionar = "Nova Carteira Cliente",
+            Export = false
+        };
+
+        return viewModel;
+    }
+
+    public async Task<CarteiraClienteViewModel?> DetailsAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var entidade = await GetByIdAsync(id, cancellationToken);
+        if (entidade is null)
+            return null;
+
+        var viewModel = new CarteiraClienteViewModel();
+        viewModel.ToViewModel(entidade);
+        return viewModel;
+    }
+
+    public async Task InsertAsync(CarteiraClienteViewModel viewModel, CancellationToken cancellationToken = default)
+    {
+        var entidade = viewModel.ToModel();
+        if (!entidade.IsValid)
+        {
+            entidade.AddNotification("", "Entidade inválida.");
+            return;
+        }
+
+        var repositorio = _uow.Repository<CarteiraCliente>();
+        await repositorio.InsertAsync(entidade, cancellationToken);
+        var changes = await _uow.CommitAsync(cancellationToken);
+
+        if (changes <= 0)
+        {
+            entidade.AddNotification("", "Erro ao salvar.");
+        }
+    }
+
+    public async Task UpdateAsync(Guid id, CarteiraClienteViewModel viewModel, CancellationToken cancellationToken = default)
+    {
+        var entidade = await GetByIdAsync(id, cancellationToken);
+
+        if (entidade is null)
+            return;
+
+        var repositorio = _uow.Repository<CarteiraCliente>();
+
+        entidade.AtualizarNome(viewModel.Nome);
+
+        await repositorio.UpdateAsync(entidade, cancellationToken);
+
+        var changes = await _uow.CommitAsync(cancellationToken);
+
+        if (changes <= 0)
+        {
+            entidade.AddNotification("", "Erro ao atualizar.");
+        }
+    }
+
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var entidade = await GetByIdAsync(id, cancellationToken);
+        if (entidade is null)
+            return;
+
+        var repositorio = _uow.Repository<CarteiraCliente>();
+        await repositorio.DeleteAsync(entidade, cancellationToken);
+        var changes = await _uow.CommitAsync(cancellationToken);
+
+        if (changes <= 0)
+        {
+            entidade.AddNotification("", "Erro ao deletar.");
+            return;
+        }
+    }
+
+    private Dictionary<string, string> Columns => new()
+    {
+        { "Nome", "NOME" },
+    };
+
+}

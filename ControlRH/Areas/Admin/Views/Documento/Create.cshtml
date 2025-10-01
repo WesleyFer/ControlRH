@@ -1,0 +1,181 @@
+﻿@model DocumentoViewModel
+
+@{
+    ViewData["Title"] = "Novo Documento";
+}
+
+<div class="card shadow-sm border-0 rounded-3">
+    <div class="card-header bg-primary text-white rounded-top">
+        <h5 class="mb-0">Adicionar Documento</h5>
+    </div>
+    <div class="card-body p-4">
+        <form asp-area="Admin" asp-controller="Documento" asp-action="Create" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label asp-for="Nome" class="form-label fw-semibold">Nome</label>
+                <input asp-for="Nome" class="form-control" placeholder="Digite o nome do documento" />
+                <span asp-validation-for="Nome" class="text-danger small"></span>
+            </div>
+
+
+
+            <div class="mb-3">
+                <label asp-for="Arquivo" class="form-label fw-semibold">Arquivo</label>
+                <input asp-for="Arquivo" type="file" class="form-control" accept=".pdf" />
+                <div class="form-text text-muted text-danger">
+                    Apenas arquivos PDF são aceitos.
+                </div>
+                <span asp-validation-for="Arquivo" class="text-danger small"></span>
+            </div>
+
+            <div class="row mb-3 align-items-center">
+                <div class="col-md-3">
+                    <label asp-for="CarteiraClienteId" class="form-label fw-semibold">Carteira de Cliente <span class="text-danger">*</span></label>
+                </div>
+                <div class="col-md-8">
+                    <select asp-for="CarteiraClienteId" asp-items="Model.CarteirasClientesSelectList" class="form-select">
+                        <option value="00000000-0000-0000-0000-000000000000">-- Selecione --</option>
+                    </select>
+                    <span asp-validation-for="CarteiraClienteId" class="text-danger small"></span>
+                </div>
+                <div class="col-md-1 text-end">
+                    <a asp-area="Admin" asp-controller="CarteiraCliente" asp-action="Create" class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" title="Adicionar Carteira Cliente">
+                        <i class="bi bi-plus-lg"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="row mb-4 align-items-center">
+                <div class="col-md-3">
+                    <label asp-for="ColaboradorId" class="form-label fw-semibold">Colaborador <span class="text-danger">*</span></label>
+                </div>
+                <div class="col-md-8">
+                    <select asp-for="ColaboradorId" asp-items="Model.ColaboradoresSelectList" class="form-select">
+                        <option value="00000000-0000-0000-0000-000000000000">-- Selecione --</option>
+                    </select>
+                    <span asp-validation-for="ColaboradorId" class="text-danger small"></span>
+                </div>
+                <div class="col-md-1 text-end">
+                    <a asp-area="Admin" asp-controller="Colaborador" asp-action="Create" class="btn btn-outline-primary btn-sm" data-bs-toggle="tooltip" title="Adicionar Colaborador">
+                        <i class="bi bi-plus-lg"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Descricao" class="form-label fw-semibold">Descrição</label>
+                <textarea asp-for="Descricao" class="form-control" placeholder="Digite uma descrição para o documento" rows="4"></textarea>
+                <span asp-validation-for="Descricao" class="text-danger small"></span>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <button type="submit" class="btn btn-primary px-4">
+                    <i class="bi bi-check-circle me-1"></i> Salvar
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                    <i class="bi bi-x-circle me-1"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        window.Documento.init();
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+
+         document.addEventListener("DOMContentLoaded", function () {
+            const inputArquivo = document.querySelector('input[type="file"][name="Arquivo"]');
+
+            inputArquivo.addEventListener("change", function () {
+                const file = this.files[0];
+                if (file) {
+                    const extension = file.name.split('.').pop().toLowerCase();
+                    if (extension !== "pdf") {
+                        alert("Somente arquivos PDF são permitidos.");
+                        this.value = ""; // limpa o input
+                    }
+                }
+            });
+        });
+    </script>
+}
+
+
+@* @model DocumentoViewModel
+
+@{
+    ViewData["Title"] = "Novo Documento";
+}
+
+<div class="card shadow">
+    <div class="card-body">
+        <h5>Adicionar Documento</h5>
+
+        <form asp-area="Admin" asp-controller="Documento" asp-action="Create" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label asp-for="Nome" class="form-label">Título</label>
+                <input asp-for="Nome" class="form-control" />
+                <span asp-validation-for="Nome" class="text-danger small"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Arquivo" class="form-label">Arquivo</label>
+                <input asp-for="Arquivo" type="file" class="form-control" />
+                <span asp-validation-for="Arquivo" class="text-danger small"></span>
+            </div>
+
+            <div class="row mb-3">
+                <label asp-for="CarteiraClienteId" class="col-sm-2 col-form-label  fw-semibold">
+                    Carteira de Cliente <span class="text-danger">*</span>
+                </label>
+                <div class="col-sm-9">
+                    <select asp-for="CarteiraClienteId" asp-items="Model.CarteirasClientesSelectList" class="form-control">
+                        <option value="00000000-0000-0000-0000-000000000000">-- Selecione --</option>
+                    </select>
+                    <span asp-validation-for="CarteiraClienteId" class="text-danger"></span>
+                </div>
+                <div class="col-sm-1">
+                    <a asp-area="Admin" asp-controller="CarteiraCliente" asp-action="Create" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Adicionar Carteira Cliente">
+                        <i class="bi bi-plus"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label asp-for="ColaboradorId" class="col-sm-2 col-form-label  fw-semibold">
+                    Colaborador <span class="text-danger">*</span>
+                </label>
+                <div class="col-sm-9">
+                    <select asp-for="ColaboradorId" asp-items="Model.ColaboradoresSelectList" class="form-control">
+                        <option value="00000000-0000-0000-0000-000000000000">-- Selecione --</option>
+                    </select>
+                    <span asp-validation-for="ColaboradorId" class="text-danger"></span>
+                </div>
+                <div class="col-sm-1">
+                    <a asp-area="Admin" asp-controller="Colaborador" asp-action="Create" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Adicionar Colaborador">
+                        <i class="bi bi-plus"></i>
+                    </a>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Salvar</button>
+            <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        window.Documento.init();
+    </script>
+}
+
+
+ *@

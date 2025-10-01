@@ -1,0 +1,216 @@
+﻿@model ControlRH.Models.ViewModels.DynamicTableViewModel
+@using System.ComponentModel
+@{
+    var properties = Model.Data.FirstOrDefault()?.GetType().GetProperties()
+        .Where(p => Model.Columns.ContainsKey(p.Name))
+        .ToDictionary(p => p.Name, p => p);
+
+    var pageSize = Model.PageSize;
+    var currentPage = Model.PageNumber;
+    var totalPages = (int)Math.Ceiling((double)Model.TotalItems / pageSize);
+    var startRecord = ((currentPage - 1) * pageSize) + 1;
+    var endRecord = Math.Min(currentPage * pageSize, Model.TotalItems);
+
+    int maxVisiblePages = 5;
+    int startPage = Math.Max(1, Model.PageNumber - maxVisiblePages / 2);
+    int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
+    if (endPage - startPage < maxVisiblePages - 1)
+    {
+        startPage = Math.Max(1, endPage - maxVisiblePages + 1);
+    }
+
+    var routeValues = string.IsNullOrEmpty(Model.AreaName) ? null : new { area = Model.AreaName };
+
+    var urlExport = Url.Action("Export", Model.ControllerName, routeValues);
+    var urlCreate = Url.Action("Create", Model.ControllerName, routeValues);
+}
+
+<div class="row">
+
+    <div class="mt-3 mb-3 d-flex justify-content-between align-items-center">
+
+        <div class="col-2">
+            <div class="d-flex justify-content-start align-items-center">
+                <label style="margin-top: 6px; margin-right: 3px;">Exibir: </label>
+                <select class="form-select form-select-sm w-auto" onchange="DynamicTable.changePageSize(this.value)">
+                    @foreach (var size in new[] { 5, 10, 20, 50, 100 })
+                    {
+                        <option value="@size" selected="@(Model.PageSize == size ? "selected" : null)">@size</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="col-6">
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Pesquisar..."
+                           aria-label="Pesquisar..." aria-describedby="basic-addon2"
+                           value="@Model.Search" onchange="DynamicTable.searchTable(this.value)">
+                    <span class="input-group-text" id="basic-addon2" style="background-color: #4e73df; color: #fff;">
+                        <i class="fas fa-search fa-sm"></i>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-4">
+            <div class="d-flex justify-content-end align-items-center">
+
+                @if (Model.Export)
+                {
+                    <a href="@urlExport" class="btn btn-sm btn-outline-success me-3">
+                        <i class="bi bi-file-earmark-excel"></i> Exportar Excel
+                    </a>
+                }
+
+                <a href="@urlCreate" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="@Model.TextoBotaoAdicionar">
+                    <i class="bi bi-plus-lg"></i> @Model.TextoBotaoAdicionar
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <table class="table table-hover align-middle custom-table">
+        <thead class="table-light">
+            <tr style="border: none;">
+                @foreach (var col in Model.Columns)
+                {
+                    <th scope="col">
+                        <a href="javascript:void(0)" onclick="DynamicTable.sortBy('@col.Key')" class="text-decoration-none text-dark">
+                            @col.Value <i class="bi bi-chevron-expand small"></i>
+                        </a>
+                    </th>
+                }
+                <th class="text-end align-middle"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Data.Any())
+            {
+                <tr>
+                    <td colspan="@(Model.Columns.Count + 1)" class="text-center text-muted">
+                        Nenhum registro encontrado.
+                    </td>
+                </tr>
+            }
+            else
+            {
+                @foreach (var item in Model.Data)
+                {
+                    <tr class="align-middle">
+                        @foreach (var col in Model.Columns.Keys)
+                        {
+                            var value = properties[col].GetValue(item);
+                            <td class="text-start align-middle">
+                                @if (value is string strValue && strValue.StartsWith("http"))
+                                {
+                                    <a href="@strValue" target="_blank">@strValue</a>
+                                }
+                                else
+                                {
+                                    @value
+                                }
+                            </td>
+                        }
+                        <td class="text-end align-middle">
+                            @{
+                                var idProp = item.GetType().GetProperty("Id");
+                                var id = idProp?.GetValue(item);
+                                var area = string.IsNullOrEmpty(Model.AreaName) ? null : Model.AreaName;
+
+                                var urlEdit = Url.Action("Edit", Model.ControllerName, new { id, area });
+                                var urlDetails = Url.Action("Details", Model.ControllerName, new { id, area });
+                            }
+
+                            @if (!Model.DisabledDetails)
+                            {
+                                <a href="@urlDetails" class="btn btn-sm btn-outline-info" data-bs-toggle="tooltip" data-bs-placement="top" title="Detalhes">
+                                    <i class="bi bi-info-circle"></i>
+                                </a>
+                            }
+
+                            @if (!Model.DisabledEdit)
+                            {
+                                <a href="@urlEdit" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Editar">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                            }
+
+                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Excluir" onclick="DynamicTable.abrirModalExcluir('@id')">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    @if (Model.Data.Any())
+    {
+        <div class="d-flex justify-content-between align-items-center mt-1 mb-5">
+            <div class="text-muted">
+                Mostrando @startRecord a @endRecord de @Model.TotalItems registros
+            </div>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                        <a class="page-link" href="javascript:void(0)" onclick="DynamicTable.goToPage(@(Model.PageNumber - 1))">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    @for (int i = startPage; i <= endPage; i++)
+                    {
+                        <li class="page-item @(Model.PageNumber == i ? "active" : "")">
+                            <a class="page-link" href="javascript:void(0)" onclick="DynamicTable.goToPage(@i)">@i</a>
+                        </li>
+                    }
+                    <li class="page-item @(Model.PageNumber == totalPages ? "disabled" : "")">
+                        <a class="page-link" href="javascript:void(0)" onclick="DynamicTable.goToPage(@(Model.PageNumber + 1))">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    }
+
+    <div class="modal fade" id="modalConfirmDelete" tabindex="-1" aria-labelledby="confirmDeleteLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="modal-title" id="confirmDeleteLabel">Confirmar Exclusão</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">Deseja realmente excluir este item?</div>
+                <div class="modal-footer">
+                    @using (Html.BeginForm("delete", Model.ControllerName, new { area = Model.AreaName }, FormMethod.Post))
+                    {
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" id="inputDeleteId" />
+                        <button type="submit" class="btn btn-sm btn-danger">Sim</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Não</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Scripts {
+    <script>
+        showLoading();
+        $(document).ready(function () {
+            hideLoading();
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+}

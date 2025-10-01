@@ -7,7 +7,6 @@ WORKDIR /app
 EXPOSE 5026
 EXPOSE 7158
 
-
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
@@ -18,6 +17,9 @@ COPY . .
 WORKDIR "/src/ControlRH"
 RUN dotnet build "./ControlRH.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
+# Gera certificado no build
+#RUN dotnet dev-certs https -ep /tmp/localhost.pfx -p 123456
+
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
@@ -27,4 +29,8 @@ RUN dotnet publish "./ControlRH.csproj" -c $BUILD_CONFIGURATION -o /app/publish 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# Copia certificado gerado
+#COPY --from=build /tmp/localhost.pfx /https/localhost.pfx
+
 ENTRYPOINT ["dotnet", "ControlRH.dll"]

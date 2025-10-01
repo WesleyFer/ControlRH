@@ -32,9 +32,9 @@ namespace ControlRH
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDataProtection()
-                .PersistKeysToFileSystem(new DirectoryInfo(@"/home/app/.aspnet/DataProtection-Keys"))
-                .SetApplicationName("ControlRH");
+            //services.AddDataProtection()
+            //    .PersistKeysToFileSystem(new DirectoryInfo(@"/home/app/.aspnet/DataProtection-Keys"))
+            //    .SetApplicationName("ControlRH");
 
             services.AddCors(options =>
             {

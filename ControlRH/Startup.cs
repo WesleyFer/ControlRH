@@ -11,6 +11,7 @@ using ControlRH.Data.Repositories;
 using ControlRH.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -31,6 +32,10 @@ namespace ControlRH
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo(@"/home/app/.aspnet/DataProtection-Keys"))
+                .SetApplicationName("ControlRH");
+
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAllCredentials", builder =>

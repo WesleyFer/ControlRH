@@ -24,8 +24,11 @@ services:
       - Jwt__Issuer=https://api.controlrh.com.br
       - Jwt__Audience=controlrh
       - UploadSettings__BasePath= /app/storage
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - DOTNET_USE_POLLING_FILE_WATCHER=true
     volumes:
-     - ./storage:/app/storage
+      - /controlrh_storage:/app/storage
+      - /controlrh_dataprotection:/home/app/.aspnet/DataProtection-Keys
     ports:
       - "5026:5026" # HTTP
       - "7158:7158" # HTTPS
@@ -36,4 +39,5 @@ networks:
   driver: bridge
 volumes: 
  mysql_data:
- controlrh_storage:   
+ controlrh_storage:
+ controlrh_dataprotection:

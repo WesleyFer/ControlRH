@@ -17,20 +17,25 @@ public class AuthService : IAuthService
     private readonly DbContext _dbContext;
     private readonly IMemoryCache _cache;
     private readonly IConfiguration _configuration;
+    private readonly ILogger<AuthService> _logger;
 
-    public AuthService(DbContext dbContext, IMemoryCache cache, IConfiguration configuration)
+    public AuthService(DbContext dbContext, IMemoryCache cache, IConfiguration configuration, ILogger<AuthService> logger)
     {
         _dbContext = dbContext;
         _cache = cache;
         _configuration = configuration;
+        _logger = logger;
     }
 
     public async Task<bool> AutenticarAsync(string login, string senha, HttpContext httpContext, CancellationToken cancellationToken = default)
     {
         var ip = httpContext.Connection.RemoteIpAddress?.ToString();
 
-        if (!ip.StartsWith("192.168.") && ip != "127.0.0.1" && ip != "::1")
-            return false;
+        _logger.LogInformation("Tentativa de login do usuário {Login} a partir do IP {IP}", login, ip);
+
+        // Removido o filtro de IP para permitir qualquer IP
+        // if (!ip.StartsWith("192.168.") && ip != "127.0.0.1" && ip != "::1")
+        //     return false;
 
         var usuario = await ObterPorLoginAsync(login, cancellationToken);
 

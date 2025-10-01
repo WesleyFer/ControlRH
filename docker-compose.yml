@@ -23,14 +23,13 @@ services:
       - Jwt__Secret=Z69JI5J1DFBsDmUovxGdTLGpH8M4K4MG
       - Jwt__Issuer=https://api.controlrh.com.br
       - Jwt__Audience=controlrh
-      - UploadSettings__BasePath= /app/storage
+      - UploadSettings__BasePath=/app/storage
       - DOTNET_RUNNING_IN_CONTAINER=true
       - DOTNET_USE_POLLING_FILE_WATCHER=true
       - ASPNETCORE_URLS=http://+:5026;https://+:7158
     volumes:
-      - ./controlrh_storage:/app/storage
-      - ./controlrh_dataprotection:/home/app/.aspnet/DataProtection-Keys
-      - ./certs/localhost.pfx:/https/localhost.pfx:ro
+      - ~/controlrh_storage:/app/storage
+      - ~/certs/localhost.pfx:/https/localhost.pfx:ro
     ports:
       - "5026:5026" # HTTP
       - "7158:7158" # HTTPS
